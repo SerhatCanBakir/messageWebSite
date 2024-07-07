@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <ul id="mHolder">
+
+    </ul>
+    <input type="text" name="mesaj_text" id="mesaj_text"><br>
+    <input type="button" value="gonder" id="gonder">
+</body>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+function getCookie(name) {
+    let cookieArr = document.cookie.split(";");
+
+    for (let i = 0; i < cookieArr.length; i++) {
+        let cookiePair = cookieArr[i].split("=");
+
+        // Removing whitespace at the beginning of the cookie name and compare it with the given string
+        if (name == cookiePair[0].trim()) {
+            // Decoding the cookie value and returning
+            return decodeURIComponent(cookiePair[1]);
+        }
+    }
+
+    // Returning null if not found
+    return null;
+}
+
+
+    console.log(document.cookie);
+    var nick = getCookie('name')
+    var OdaNo = getCookie('Oda')
+    var socket = io();
+    console.log('ilk='+nick);
+    console.log('iki='+OdaNo);
+    socket.emit('Oda', OdaNo);
+    var Sbutton = document.getElementById("gonder");
+
+    var Forum = document.getElementById('mesaj_text');
+
+
+
+
+
+    Sbutton.addEventListener('click', () => {
+        console.log("oda:" + OdaNo + " " + " mesaj deger" + Forum.value);
+
+        socket.emit('TopluMesaj', { 'Oda': OdaNo, 'msj': Forum.value, 'nick': nick });
+        Forum.value = ''
+    })
+
+
+
+    socket.on('Mesaj', (msg) => {
+        const item = document.createElement('li');
+        item.textContent = msg;
+        document.getElementById('mHolder').appendChild(item);
+    })
+
+
+
+</script>
+
+</html>
