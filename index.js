@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 const port = 3000;
-const ip = '192.168.1.69';
+//const ip = '';
 const fs = require('fs');
 
 app.get('/', (req, res) => {
@@ -38,7 +38,7 @@ io.on('connection', (socket) => {
 
 
 
-server.listen(port, ip, () => {
+server.listen(port,() => {
     console.log("app ${port} de dinleniyor");
 })
 
