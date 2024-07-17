@@ -17,24 +17,6 @@ app.get('/client', (req, res) => {
 
 })
 
-io.on('connection', (socket) => {
-    console.log(socket.id + "   'li kullanici baglantı kurdu");
-
-    socket.on('Oda', (Oda) => {
-        socket.join(Oda);
-        console.log(socket.id + "   odaya katıldı  " + Oda);
-
-    })
-
-    socket.on('TopluMesaj', (obj) => {
-        io.to(obj.Oda).emit('Mesaj', obj.nick + ': ' + obj.msj);
-        
-    })
-
-    socket.on('disconnect', () => {
-        console.log(socket.id + "    'id li kullanici ayrildi");
-    })
-})
 
 
 

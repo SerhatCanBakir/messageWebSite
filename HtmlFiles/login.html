@@ -1,44 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
-    <table>
-        <tr>
-            <td>Kullanici adi:</td>
-            <td><input type="text" name="" id="username"></td>
-        </tr>
-        <tr>
-            <td>Oda no:</td>
-            <td><input type="text" name="" id="OdaNo"></td>
-        </tr>
-        <tr>
-            <td><input type="button" value="giris yap" id="girbtn"></td>
-            <td><input type="button" value="Sil" id="silbtn"></td>
-        </tr>
-    </table>
+    
 </body>
-<script>
-    var UserName = document.getElementById('username');
-    var OdaNo = document.getElementById('OdaNo');
-    var GirButton = document.getElementById('girbtn');
-    var SilButton = document.getElementById('silbtn');
-
-    GirButton.addEventListener('click', () => {
-        document.cookie = "name =" + UserName.value+' ;';
-        document.cookie = "Oda =" + OdaNo.value+' ;';
-        window.location.assign('/client');
-    })
-
-    SilButton.addEventListener('click', () => {
-        UserName.value = ' ';
-        OdaNo.value = ' ';
-    })
-</script>
-
 </html>
