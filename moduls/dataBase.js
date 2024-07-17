@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 const MongoIp = 'mongodb+srv://serhatcanbakir2534:SerhatWpDeneme@serhatwp.35jh1l9.mongodb.net/?retryWrites=true&w=majority&appName=SerhatWp';
 mongoose.connect(MongoIp).then(console.log('MongoServerina baglandi')).catch(err => { console.log(err) });
 
+
+// şemaların tanımlanması 
 const newUserSchema = new Schema({
     'userName': { type: String },
     'password': { type: String },
@@ -23,12 +25,12 @@ const newRoomSchema = new Schema({
     Users: { type: [String] },
 })
 
-
+//user modelinin tanımlanması
 const User = mongoose.model('user', newUserSchema);
 
 
 
-
+// kullanıcı girişi eğer doğru ise kullanıcı bilgisini değil ise false döndürür
 async function login(object) {
     let user = await User.findOne({ 'userName': object.userName })
     let hexpas = crypto.createHash('sha256').update(object.password).digest('hex');
@@ -39,7 +41,7 @@ async function login(object) {
     }
 }
 
-
+//kayıt olma fonksiyonu kullanıcı hali hazırda varsa false yoksa true döndürür
 async function register(object) {
     let log = await login(object);
     if (log != false) {
@@ -50,11 +52,12 @@ async function register(object) {
             'rooms': null,
         });
         let save = await NewUser.save();
+        return true;
     } else {
         return false;
     }
 }
-
+// eğer oda yoksa oluşturur varsa odaya kullanıcıyı ekler 
 async function roomFindOrCreate(obj) {
     const Room = mongoose.model(obj.room, newRoomSchema)
     let roomid = await Room.find({ roomid: obj.room });
@@ -85,10 +88,11 @@ async function roomFindOrCreate(obj) {
 
         }
     }
+    return true;
 
 }
 
-
+// odaya mesaj ekler 
 async function addMesage(obj){
   const message = await  mongoose.model(obj.room,newMessageSchema);
    let now = new Date();
@@ -99,10 +103,18 @@ async function addMesage(obj){
 })
 a = await newMessage.save();
 }
-
+// odadaki önceki mesajları alır 
 async function takeMessage(roomId){
     const message = await  mongoose.model(roomId,newMessageSchema);
     let msj = await message.find(roomId);
     msj.sort((a,b)=>{a.date-b.date});
     return msj;
 }
+
+module.exports(
+    login,
+    register,
+    roomFindOrCreate,
+    addMesage,
+    takeMessage,
+)
