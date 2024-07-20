@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>register</title>
+</head>
+<body>
+    
+<form action="">
+    <table>
+        <tr><td>username:</td><td><input type="text" name="" id="UserText"></td></tr>
+        <tr><td>Password:</td><td><input type="password" name="" id="UserPass"></td></tr>
+        <tr><td><input type="button" value="kayit ol" id="Regbtn"></td><td><input type="button" value="giris yap" id="LogBtn"></td></tr>
+    </table>
+</form>
+
+
+
+
+
+</body><script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    const socket = io();
+      
+   var Regbtn = document.getElementById('Regbtn');
+   var Logbtn = document.getElementById('LogBtn');
+   var UserText = document.getElementById('UserText');
+   var UserPass = document.getElementById('UserPass');
+   Regbtn.addEventListener('click',()=>{
+    let obj = {userName:UserText.value,password:UserPass.value};
+    socket.emit('register',obj);
+   });
+
+   Logbtn.addEventListener('click',()=>{
+    let obj = {userName:UserText.value,password:UserPass.value}
+    socket.emit('login',obj);
+   })
+
+   socket.on('hata',(hata)=>{
+    let h1 = document.createElement('h1');
+    console.log(hata);
+    h1.innerHTML=hata;
+    document.appendChild(h1);
+   })
+
+   socket.on('token',(token)=>{
+    document.cookie ='TOKEN'+token+';';
+    console.log(token);
+    fetch('/client');
+   })
+   socket.on('sucsess',(data)=>{
+    console.log('kayit basarili');
+    
+   })
+
+</script>
+</html>

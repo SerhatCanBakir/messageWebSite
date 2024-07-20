@@ -16,10 +16,30 @@ app.get('/client', (req, res) => {
 
 })
 
+app.get('/register',(req,res)=>{
+    res.sendFile(__dirname + '/HtmlFiles/register.html');
+})
+
 io.on('connection', (socket) => {
 
-    socket.on('login',(object)=>{
+    socket.on('login',async(object)=>{
+     let user = await DBfunc.login(object);
      
+     if(user!= false && user!=null && user!= undefined){
+     let token = JWtfunc.createToken(JSON.stringify(user));
+     socket.emit('token',token);
+     }else{
+        socket.emit('hata','hatali giris');
+     }
+    })
+
+    socket.on('register',async(object)=>{
+       let temp = await DBfunc.register(object);
+       if(temp){
+        socket.emit('sucsess',null);
+       }else{
+        socket.emit('hata','kullanici halihazirda var')
+       }
     })
 
 
@@ -63,7 +83,7 @@ io.on('connection', (socket) => {
 
 
 server.listen(port, () => {
-    console.log("app ${port} de dinleniyor");
+    console.log("app "+port+" de dinleniyor");
 })
 
 

@@ -7,9 +7,9 @@ mongoose.connect(MongoIp).then(console.log('MongoServerina baglandi')).catch(err
 
 // şemaların tanımlanması 
 const newUserSchema = new Schema({
-    'userName': { type: String },
-    'password': { type: String },
-    'rooms': { type: [String] },
+    userName: { type: String },
+    password: { type: String },
+    rooms: { type: [String] },
 
 });
 
@@ -32,19 +32,23 @@ const User = mongoose.model('user', newUserSchema);
 
 // kullanıcı girişi eğer doğru ise kullanıcı bilgisini değil ise false döndürür
 async function login(object) {
-    let user = await User.findOne({ 'userName': object.userName })
+    let user = await User.findOne({ userName: object.userName })
     let hexpas = crypto.createHash('sha256').update(object.password).digest('hex');
-    if (user.password === hexpas) {
-        return user;
-    } else {
+    if (user == null) {
         return false;
+    } else {
+        if (user.password == hexpas) {
+            return user;
+        } else { return null }
+
     }
 }
 
 //kayıt olma fonksiyonu kullanıcı hali hazırda varsa false yoksa true döndürür
 async function register(object) {
     let log = await login(object);
-    if (log != false) {
+    if (log == false) {
+        
         let sifre = crypto.createHash('sha256').update(object.password).digest('hex');
         const NewUser = new User({
             'userName': object.userName,
@@ -80,7 +84,7 @@ async function roomFindOrCreate(obj) {
                     console.log(err);
                     return false;
                 } else {
-                  console.log('kullanici eklendi');
+                    console.log('kullanici eklendi');
                 }
 
 
@@ -93,28 +97,28 @@ async function roomFindOrCreate(obj) {
 }
 
 // odaya mesaj ekler 
-async function addMesage(obj){
-  const message = await  mongoose.model(obj.room,newMessageSchema);
-   let now = new Date();
-   let newMessage = new messege({
-    user:obj.user,
-    msg:obj.msg,
-    date:now,
-})
-a = await newMessage.save();
+async function addMesage(obj) {
+    const message = await mongoose.model(obj.room, newMessageSchema);
+    let now = new Date();
+    let newMessage = new messege({
+        user: obj.user,
+        msg: obj.msg,
+        date: now,
+    })
+    a = await newMessage.save();
 }
 // odadaki önceki mesajları alır 
-async function takeMessage(roomId){
-    const message = await  mongoose.model(roomId,newMessageSchema);
+async function takeMessage(roomId) {
+    const message = await mongoose.model(roomId, newMessageSchema);
     let msj = await message.find(roomId);
-    msj.sort((a,b)=>{a.date-b.date});
+    msj.sort((a, b) => { a.date - b.date });
     return msj;
 }
 
-module.exports(
+module.exports = {
     login,
     register,
     roomFindOrCreate,
     addMesage,
     takeMessage,
-)
+}
