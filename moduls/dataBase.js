@@ -48,12 +48,12 @@ async function login(object) {
 async function register(object) {
     let log = await login(object);
     if (log == false) {
-        
+
         let sifre = crypto.createHash('sha256').update(object.password).digest('hex');
         const NewUser = new User({
             'userName': object.userName,
             'password': sifre,
-            'rooms': null,
+            'rooms': [],
         });
         let save = await NewUser.save();
         return true;
@@ -115,10 +115,17 @@ async function takeMessage(roomId) {
     return msj;
 }
 
+async function addRoomToUser(room, userInfo) {
+    userInfo.rooms.push(room);
+    let a = await User.updateOne({ userName: userInfo.userName }, { rooms: userInfo.rooms });
+    return true;
+}
+
 module.exports = {
     login,
     register,
     roomFindOrCreate,
     addMesage,
     takeMessage,
+    addRoomToUser,
 }

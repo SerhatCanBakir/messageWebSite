@@ -6,6 +6,48 @@
     <title>client</title>
 </head>
 <body>
-    
+    <ol id="odalarin listesi"></ol>
+    <input type="text" name="" id="oda no">
+    <input type="button" value="odaya katil" id="joinbtn">
 </body>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<script>
+    var socket = io();
+    const liste = document.getElementById('odalarin listesi');
+    const textArea = document.getElementById('oda no');
+    const btn = document.getElementById('joinbtn');
+
+    function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+ const  token = getCookie('TOKEN')
+ console.log(token);
+    socket.emit('Oda al',getCookie('TOKEN'));
+
+    socket.on('odalar',(odalar)=>{
+        console.log(odalar);
+        odalar.forEach(element => {
+            let room = document.createElement('li');
+            room.innerHTML=element;
+            room.addEventListener('click',()=>{
+                textArea.value = room.innerHTML;
+            })
+            liste.appendChild(room);
+        });
+    })
+
+
+    btn.addEventListener('click',()=>{
+        socket.emit('oda ekle',({oda:textArea.value,token:token}));
+        
+    })
+
+    socket.on('devam',(mesaj)=>{console.log(mesaj),
+        window.location.href = '/room/?id='+textArea.value;
+    })
+
+    socket.on('hata',(hata)=>{console.log(hata)})
+</script>   
 </html>

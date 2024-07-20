@@ -45,9 +45,9 @@
    })
 
    socket.on('token',(token)=>{
-    document.cookie ='TOKEN'+token+';';
+    document.cookie ='TOKEN='+token+';'+"SameSite=Strict;path=/";
     console.log(token);
-    fetch('/client');
+    window.location.href = '/client'
    })
    socket.on('sucsess',(data)=>{
     console.log('kayit basarili');

@@ -8,7 +8,7 @@ const port = 3000;
 const DBfunc = require('./moduls/dataBase');
 const JWtfunc = require('./moduls/JWTfunc');
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + "/HtmlFiles/login.html");
+    res.sendFile(__dirname + "/HtmlFiles/register.html");
 })
 
 app.get('/client', (req, res) => {
@@ -21,6 +21,35 @@ app.get('/register',(req,res)=>{
 })
 
 io.on('connection', (socket) => {
+
+    socket.on('Oda al',async (token)=>{
+        console.log(token);
+        JWtfunc.TokenData(token,(user)=>{
+            console.log(user);
+        if(user!=false  && user!=undefined){
+            if(user.rooms==null){
+                user.rooms=[];
+            }
+        socket.emit('odalar',user.rooms);}
+        else{socket.emit('hata','token doldu')}
+        });
+        
+    })
+
+    socket.on('oda ekle',({oda,token})=>{
+        JWtfunc.TokenData(token,async (user)=>{if(user!=false){
+        if(user.rooms.includes(oda)){
+            //pass
+            console.log('oda var');
+            socket.emit('devam','calisti');
+        }else{
+        var a = await DBfunc.addRoomToUser(oda,user);} 
+        if(a){
+            socket.emit('devam','calisti');
+        }
+       }else{socket.emit('hata','gecersiz token')}});
+       
+    })
 
     socket.on('login',async(object)=>{
      let user = await DBfunc.login(object);
