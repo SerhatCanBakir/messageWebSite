@@ -48,7 +48,7 @@ async function login(object) {
 async function register(object) {
     let log = await login(object);
     if (log == false) {
-
+        
         let sifre = crypto.createHash('sha256').update(object.password).digest('hex');
         const NewUser = new User({
             'userName': object.userName,
@@ -62,10 +62,13 @@ async function register(object) {
     }
 }
 // eğer oda yoksa oluşturur varsa odaya kullanıcıyı ekler 
+
+/*
 async function roomFindOrCreate(obj) {
+    mongoose.models = {};
     const Room = mongoose.model(obj.room, newRoomSchema)
     let roomid = await Room.find({ roomid: obj.room });
-    if (roomid == null) {
+    if (roomid == null ) {
         let newRoom = new Room({
             roomid: obj.room,
             description: null,
@@ -74,7 +77,8 @@ async function roomFindOrCreate(obj) {
         let a = await newRoom.save();
 
     } else {
-        let userExist = roomid.Users.includes(obj.user);
+        if(roomid.Users == Array){
+         var userExist = roomid.Users.includes(obj.user);}
         if (userExist) {
             //do nothing
         } else {
@@ -95,12 +99,14 @@ async function roomFindOrCreate(obj) {
     return true;
 
 }
+    */
 
 // odaya mesaj ekler 
 async function addMesage(obj) {
+    mongoose.models= {};
     const message = await mongoose.model(obj.room, newMessageSchema);
     let now = new Date();
-    let newMessage = new messege({
+    let newMessage = new message({
         user: obj.user,
         msg: obj.msg,
         date: now,
@@ -109,22 +115,23 @@ async function addMesage(obj) {
 }
 // odadaki önceki mesajları alır 
 async function takeMessage(roomId) {
+    mongoose.models={};
     const message = await mongoose.model(roomId, newMessageSchema);
-    let msj = await message.find(roomId);
+    let msj = await message.find({});
     msj.sort((a, b) => { a.date - b.date });
     return msj;
 }
 
-async function addRoomToUser(room, userInfo) {
-    userInfo.rooms.push(room);
-    let a = await User.updateOne({ userName: userInfo.userName }, { rooms: userInfo.rooms });
-    return true;
+async function addRoomToUser(room,userInfo){
+ userInfo.rooms.push(room);
+ let a = await User.updateOne({userName:userInfo.userName},{rooms:userInfo.rooms});
+ return true;
 }
 
 module.exports = {
     login,
     register,
-    roomFindOrCreate,
+  //  roomFindOrCreate,
     addMesage,
     takeMessage,
     addRoomToUser,

@@ -16,103 +16,107 @@ app.get('/client', (req, res) => {
 
 })
 
-app.get('/register',(req,res)=>{
+app.get('/register', (req, res) => {
     res.sendFile(__dirname + '/HtmlFiles/register.html');
+})
+
+app.get('/room',(req,res)=>{
+    res.sendFile(__dirname+'/HtmlFiles/room.html');
 })
 
 io.on('connection', (socket) => {
 
-    socket.on('Oda al',async (token)=>{
+    socket.on('Oda al', async (token) => {
         console.log(token);
-        JWtfunc.TokenData(token,(user)=>{
+        JWtfunc.TokenData(token, (user) => {
             console.log(user);
-        if(user!=false  && user!=undefined){
-            if(user.rooms==null){
-                user.rooms=[];
+            if (user != false && user != undefined) {
+                if (user.rooms == null) {
+                    user.rooms = [];
+                }
+                socket.emit('odalar', user.rooms);
             }
-        socket.emit('odalar',user.rooms);}
-        else{socket.emit('hata','token doldu')}
+            else { socket.emit('hata', 'token doldu') }
         });
-        
+
     })
 
-    socket.on('oda ekle',({oda,token})=>{
-        JWtfunc.TokenData(token,async (user)=>{if(user!=false){
-        if(user.rooms.includes(oda)){
-            //pass
-            console.log('oda var');
-            socket.emit('devam','calisti');
-        }else{
-        var a = await DBfunc.addRoomToUser(oda,user);} 
-        if(a){
-            socket.emit('devam','calisti');
-        }
-       }else{socket.emit('hata','gecersiz token')}});
-       
+    socket.on('oda ekle', ({ oda, token }) => {
+        JWtfunc.TokenData(token, async (user) => {
+            if (user != false) {
+                if (user.rooms.includes(oda)) {
+                    //pass
+                    console.log('oda var');
+                    socket.emit('devam', 'calisti');
+                } else {
+                    var a = await DBfunc.addRoomToUser(oda, user);
+                }
+                if (a) {
+                    socket.emit('devam', 'calisti');
+                }
+            } else { socket.emit('hata', 'gecersiz token') }
+        });
+
     })
 
-    socket.on('login',async(object)=>{
-     let user = await DBfunc.login(object);
-     
-     if(user!= false && user!=null && user!= undefined){
-     let token = JWtfunc.createToken(JSON.stringify(user));
-     socket.emit('token',token);
-     }else{
-        socket.emit('hata','hatali giris');
-     }
-    })
+    socket.on('login', async (object) => {
+        let user = await DBfunc.login(object);
 
-    socket.on('register',async(object)=>{
-       let temp = await DBfunc.register(object);
-       if(temp){
-        socket.emit('sucsess',null);
-       }else{
-        socket.emit('hata','kullanici halihazirda var')
-       }
-    })
-
-
-
-    socket.on('joinRoom', async (object) => {
-        let a = JWtfunc.TokenData(object.token);
-        if (a == false) {
-            socket.emit('hata', 'token dogrulanamadi')
+        if (user != false && user != null && user != undefined) {
+            let token = JWtfunc.createToken(JSON.stringify(user));
+            socket.emit('token', token);
         } else {
-            let roomLogObj = { room: object.room, user: a.username }
-            let room = await DBfunc.roomFindOrCreate(roomLogObj);
-            if (room) {
-                socket.join(object.room);
-            } else {
-                socket.emit('hata', 'oda baglantisinda hata olustu')
-            }
+            socket.emit('hata', 'hatali giris');
         }
-        socket.on('openRoom', async (roomid) => {
-            let mesajlar = await DBfunc.takeMessage(roomid);
-            socket.emit('loadMessage', mesajlar);
-        })
-
-        socket.on('mesaj', async (object) => {
-            let userdata = JWtfunc.TokenData(object.token);
-            if (userdata == false) {
-                socket.emit('hata', 'gecersiz token');
-            } else {
-                let mesageObj = { user: userdata.username, msj: object.msj };
-                let add = await DBfunc.addMesage(mesageObj);
-                io.to(object.room).emit('mesaj', (mesageObj))
-            }
-        })
-
-
-
-
     })
 
+    socket.on('register', async (object) => {
+        let temp = await DBfunc.register(object);
+        if (temp) {
+            socket.emit('sucsess', null);
+        } else {
+            socket.emit('hata', 'kullanici halihazirda var')
+        }
+    })
+
+
+
+   /* socket.on('oda kontrol', ({ roomid, token }) => {
+        JWtfunc.TokenData(token, async (user) => {
+            if (user != false) {
+                let a = await DBfunc.roomFindOrCreate({ room: roomid, user: user.userName });
+                socket.emit('basarili', 'oda konturolu basarili');
+            } else { socket.emit('hata', 'gecersiz token'); }
+        })
+    })*/
+
+    socket.on('gecmis mesajlar', async (roomid) => {
+        let a = await DBfunc.takeMessage(roomid);
+        if(a==null){
+            console.log(a);
+            socket.emit('hata','mesaj alinamadi')
+        }
+        socket.emit('eski mesaj', a);
+    })
+
+    socket.on('odaya katil', (roomid) => {
+        socket.join(roomid)
+    })
+
+    socket.on('mesaj', ({ roomid, token ,msj})=> {
+    JWtfunc.TokenData(token,async(user)=>{
+        if(user!=false){
+            let a = await DBfunc.addMesage({room:roomid,user:user.userName,msg:msj})
+            io.to(roomid).emit('mesaj',user.userName+' : '+ msj );
+        }
+    })
+    })
 
 })
 
 
 server.listen(port, () => {
-    console.log("app "+port+" de dinleniyor");
+    console.log("app " + port + " de dinleniyor");
 })
 
 

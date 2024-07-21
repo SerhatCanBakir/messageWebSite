@@ -6,11 +6,46 @@
     <title>room</title>
 </head>
 <body>
-    
+    <il id="mesajlar"></il>
+    <input type="text" id="mesaj kutusu">
+    <input type="button" value="gönder" id="btn">
 </body>
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
-  
-
+    function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+  const urlParams = new URLSearchParams(window.location.search);
+  const RoomId = urlParams.get('id');
+  const token = getCookie('TOKEN');
+  const list = document.getElementById('mesajlar');
+  const textArea = document.getElementById('mesaj kutusu');
+  const buton = document.getElementById('btn');
+  const socket = io();
+  //socket.emit('oda kontrol',({roomid:RoomId,token:token}));
+  socket.emit('gecmis mesajlar',RoomId);
+  socket.emit('odaya katil',(RoomId));
+  buton.addEventListener('click',()=>{
+    socket.emit('mesaj',({roomid:RoomId,token:token,msj:textArea.value}));
+  })
+  socket.on('mesaj',(mesaj)=>{
+let msjbox = document.createElement('li');
+msjbox.innerHTML = mesaj;
+list.appendChild(msjbox);
+  })
+  socket.on('basarili',(mesaj)=>{console.log(mesaj)});
+  socket.on('hata',(hata)=>{console.log(hata)});
+  socket.on('eski mesaj',(mesajlar)=>{
+    if(mesajlar!=null){
+  mesajlar.forEach(element => {
+     let alt = document.createElement('li');
+     alt.innerHTML = element.user + ' : '+element.msg;
+     list.appendChild(alt);
+  });}else{
+    console.log(mesajlar);
+  }
+  })
 </script>
 </html>

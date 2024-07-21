@@ -12,16 +12,17 @@
 </body>
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
-    var socket = io();
-    const liste = document.getElementById('odalarin listesi');
-    const textArea = document.getElementById('oda no');
-    const btn = document.getElementById('joinbtn');
-
     function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+    var socket = io();
+    const liste = document.getElementById('odalarin listesi');
+    const textArea = document.getElementById('oda no');
+    const btn = document.getElementById('joinbtn');
+
+    
  const  token = getCookie('TOKEN')
  console.log(token);
     socket.emit('Oda al',getCookie('TOKEN'));
