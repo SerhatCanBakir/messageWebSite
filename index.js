@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/client', (req, res) => {
-    res.sendFile(__dirname + '/HtmlFiles/client.html')
+    res.sendFile(__dirname + '/HtmlFiles/Client.html')
 
 })
 
