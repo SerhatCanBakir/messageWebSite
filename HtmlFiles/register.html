@@ -38,10 +38,7 @@
    })
 
    socket.on('hata',(hata)=>{
-    let h1 = document.createElement('h1');
-    console.log(hata);
-    h1.innerHTML=hata;
-    document.appendChild(h1);
+    alert(hata);
    })
 
    socket.on('token',(token)=>{
