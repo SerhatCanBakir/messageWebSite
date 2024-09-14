@@ -1,14 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>room</title>
+    <title>Mesajlaşma Odası</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; margin: 0; }
+        .chat-container {
+            display: flex; flex-direction: column; height: 100vh;
+        }
+        .messages {
+            flex: 1; padding: 20px; overflow-y: scroll; background-color: #fff;
+        }
+        .messages p { margin: 5px 0; }
+        .input-area {
+            display: flex; padding: 10px; background-color: #ccc;
+        }
+        .input-area input {
+            flex: 1; padding: 10px;
+        }
+        .input-area button {
+            padding: 10px; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <il id="mesajlar"></il>
-    <input type="text" id="mesaj kutusu">
-    <input type="button" value="gönder" id="btn">
+    <div class="chat-container">
+        <ul class="messages" id="mesajlar">
+            <!-- Mesajlar buraya gelecek -->
+        </ul>
+        <div class="input-area">
+            <input type="text" id="mesaj kutusu" placeholder="Mesajınızı yazın...">
+            <button id="btn">Gönder</button>
+        </div>
+    </div>
 </body>
 <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>

@@ -1,24 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>register</title>
+    <title>Kullanıcı Girişi</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f2f2f2; }
+        .login-container {
+            width: 300px; margin: 100px auto; padding: 20px; background-color: #fff; border: 1px solid #ccc;
+        }
+        .login-container h2 { text-align: center; }
+        .login-container input {
+            width: 100%; padding: 10px; margin: 5px 0;
+        }
+        .login-container button {
+            width: 48%; padding: 10px; margin: 5px 1%; cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    
-<form action="">
-    <table>
-        <tr><td>username:</td><td><input type="text" name="" id="UserText"></td></tr>
-        <tr><td>Password:</td><td><input type="password" name="" id="UserPass"></td></tr>
-        <tr><td><input type="button" value="kayit ol" id="Regbtn"></td><td><input type="button" value="giris yap" id="LogBtn"></td></tr>
-    </table>
-</form>
-
-
-
-
-
+    <div class="login-container">
+        <h2>Giriş Yap</h2>
+        <input type="text"  id="UserText" placeholder="Kullanıcı Adı">
+        <input type="password" id="UserPass" placeholder="Şifre">
+        <div style="text-align: center;">
+            <button id="Regbtn">Kayıt Ol</button>
+            <button id="LogBtn">Giriş Yap</button>
+        </div>
+    </div>
 </body><script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
     const socket = io();
